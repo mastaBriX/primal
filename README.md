@@ -35,19 +35,42 @@ python app.py
 
 ## Docker 部署
 
-### 构建镜像
+### 使用 Docker Compose（推荐）
+
+Docker Compose 配置会从 GitHub Container Registry 拉取预构建的公开镜像。
 
 ```bash
-docker build -t primal-checker .
-```
+# 拉取最新镜像并启动服务
+docker-compose up -d
 
-### 运行容器
+# 查看日志
+docker-compose logs -f
 
-```bash
-docker run -d -p 5000:5000 --name primal-checker primal-checker
+# 停止服务
+docker-compose down
+
+# 更新到最新镜像
+docker-compose pull && docker-compose up -d
 ```
 
 然后在浏览器中访问：http://localhost:5000
+
+**注意**：镜像已设置为公开，无需登录即可拉取。
+
+### 使用 Docker 命令
+
+#### 直接运行
+
+```bash
+docker run -d -p 5000:5000 --name primal-checker ghcr.io/mastabrix/primal:latest
+```
+
+#### 本地构建（可选）
+
+```bash
+docker build -t primal-checker .
+docker run -d -p 5000:5000 --name primal-checker primal-checker
+```
 
 ## CI/CD
 
