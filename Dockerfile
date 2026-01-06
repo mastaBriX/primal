@@ -27,6 +27,10 @@ FROM python:3.11-alpine AS runner
 
 RUN apk add --no-cache libffi
 
+# 创建非 root 用户
+RUN addgroup -g 1000 appuser && \
+    adduser -D -u 1000 -G appuser appuser
+
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
@@ -40,6 +44,12 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # 复制应用代码
 COPY app.py .
 COPY templates/ ./templates/
+
+# 更改文件所有权
+RUN chown -R appuser:appuser /app
+
+# 切换到非 root 用户
+USER appuser
 
 EXPOSE 5000
 
