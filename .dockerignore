@@ -50,6 +50,18 @@ README.md
 # CI/CD
 .github/
 
+# Tests
+tests/
+test_*.py
+*_test.py
+requirements-test.txt
+pytest.ini
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
 # Other
 *.log
 .env

@@ -11,18 +11,99 @@
 
 ## 安装步骤
 
-1. 安装依赖：
+### 方式1：使用 uv（推荐，快速且高效）
+
+```bash
+# 安装 uv（如果尚未安装）
+# Windows (PowerShell)
+irm https://astral.sh/uv/install.ps1 | iex
+
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# 同步依赖（安装生产依赖）
+uv sync
+
+# 安装包含测试依赖
+uv sync --extra test
+```
+
+### 方式2：使用 pip 和 pyproject.toml
+
+```bash
+# 安装生产依赖
+pip install -e .
+
+# 或安装包含测试依赖
+pip install -e ".[test]"
+```
+
+### 方式3：使用 requirements.txt（传统方式）
+
 ```bash
 pip install -r requirements.txt
 ```
 
 ## 运行程序
 
+### 使用 uv
+
+```bash
+# 使用 uv 运行（自动使用虚拟环境）
+uv run python app.py
+```
+
+### 使用传统方式
+
 ```bash
 python app.py
 ```
 
 然后在浏览器中访问：http://localhost:5000
+
+## 本地测试
+
+### 使用 uv（推荐）
+
+```bash
+# 运行所有测试
+uv run pytest tests/ -v
+
+# 带覆盖率报告
+uv run pytest tests/ -v --cov=app --cov-report=term-missing
+```
+
+### 使用传统方式
+
+```bash
+# 如果已安装测试依赖
+pytest tests/ -v
+
+# 或带覆盖率报告
+pytest tests/ -v --cov=app --cov-report=term-missing
+```
+
+### 运行特定测试文件
+
+```bash
+pytest tests/test_app.py -v
+```
+
+### 运行特定测试类或函数
+
+```bash
+# 运行特定测试类
+pytest tests/test_app.py::TestIsPrime -v
+
+# 运行特定测试函数
+pytest tests/test_app.py::TestIsPrime::test_is_prime_small_primes -v
+```
+
+### 测试输出说明
+
+- `-v` 或 `--verbose`：显示详细输出
+- `--cov=app`：生成代码覆盖率报告
+- `--cov-report=term-missing`：在终端显示覆盖率，并标记未覆盖的行
 
 ## 使用说明
 

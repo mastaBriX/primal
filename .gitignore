@@ -8,3 +8,15 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+ENV/
+env/
+
+# uv
+.uv/
+uv.lock.bak
+
+# Test cache
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,7 +1,23 @@
 [project]
 name = "primal"
 version = "0.1.0"
-description = "Add your description here"
+description = "质数检查 Flask 应用"
 readme = "README.md"
-requires-python = ">=3.13"
-dependencies = []
+requires-python = ">=3.11"
+dependencies = [
+    "Flask==3.0.0",
+    "Werkzeug==3.0.1",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==7.4.3",
+    "pytest-cov==4.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []

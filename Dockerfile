@@ -16,11 +16,12 @@ ENV PYTHONUNBUFFERED=1 \
 # 升级 pip
 RUN pip install --upgrade pip
 
-# 复制依赖文件
-COPY requirements.txt .
+# 复制项目配置文件和应用代码（用于安装依赖）
+COPY pyproject.toml .
+COPY app.py .
 
-# 安装到系统目录（不使用 --user）
-RUN pip install -r requirements.txt
+# 安装项目依赖（pip 会从 pyproject.toml 读取依赖）
+RUN pip install --no-cache-dir .
 
 # 第二阶段：运行阶段
 FROM python:3.11-alpine AS runner
