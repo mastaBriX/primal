@@ -23,7 +23,18 @@ env/
 .uv/
 uv.lock.bak
 
+# ruff
+.ruff_cache/
+
 # Test cache
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+# 忽略所有 .env 文件，但保留 .env.example
+*.env
+!.env.example

@@ -9,9 +9,16 @@ services:
     ports:
       - "5000:5000"
     environment:
-      - FLASK_APP=app.py
+      - FLASK_APP=src.app
+      - FLASK_DEBUG=false
       - PYTHONUNBUFFERED=1
       - PYTHONDONTWRITEBYTECODE=1
+      - MAX_INPUT_VALUE=1000000000
+      - GUNICORN_WORKERS=4
+      - GUNICORN_TIMEOUT=30
+      - PYTHONPATH=/app
+      # SECRET_KEY 应该通过 secrets 或环境变量文件设置，不要硬编码
+      # - SECRET_KEY=${SECRET_KEY}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/')"]

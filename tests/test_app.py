@@ -1,8 +1,12 @@
 """
 测试 Flask 应用的质数检查功能
 """
+import os
 import pytest
-from app import app, is_prime
+# 在导入 app 之前设置环境变量，确保 Talisman 在测试模式下不强制 HTTPS
+os.environ['FLASK_ENV'] = 'testing'
+from src.app import app
+from src.services.prime_checker import PrimeChecker
 
 
 @pytest.fixture
@@ -13,41 +17,120 @@ def client():
         yield client
 
 
-class TestIsPrime:
-    """测试 is_prime 函数"""
+@pytest.fixture
+def prime_checker():
+    """创建质数检查器实例"""
+    return PrimeChecker()
+
+
+class TestPrimeChecker:
+    """测试 PrimeChecker 类"""
     
-    def test_is_prime_small_primes(self):
+    def test_check_small_primes(self, prime_checker):
         """测试小质数"""
-        assert is_prime(2) == (True, "2是质数")
-        assert is_prime(3) == (True, "3是质数")
-        assert is_prime(5) == (True, "5是质数")
-        assert is_prime(7) == (True, "7是质数")
-        assert is_prime(11) == (True, "11是质数")
-        assert is_prime(13) == (True, "13是质数")
-        assert is_prime(17) == (True, "17是质数")
-        assert is_prime(19) == (True, "19是质数")
+        result = prime_checker.check(2)
+        assert result.is_prime is True
+        assert "2是质数" in result.message
+        
+        result = prime_checker.check(3)
+        assert result.is_prime is True
+        assert "3是质数" in result.message
+        
+        result = prime_checker.check(5)
+        assert result.is_prime is True
+        assert "5是质数" in result.message
+        
+        result = prime_checker.check(7)
+        assert result.is_prime is True
+        assert "7是质数" in result.message
+        
+        result = prime_checker.check(11)
+        assert result.is_prime is True
+        assert "11是质数" in result.message
+        
+        result = prime_checker.check(13)
+        assert result.is_prime is True
+        assert "13是质数" in result.message
+        
+        result = prime_checker.check(17)
+        assert result.is_prime is True
+        assert "17是质数" in result.message
+        
+        result = prime_checker.check(19)
+        assert result.is_prime is True
+        assert "19是质数" in result.message
     
-    def test_is_prime_small_composites(self):
+    def test_check_small_composites(self, prime_checker):
         """测试小合数"""
-        assert is_prime(4) == (False, "4不是质数（能被2整除）")
-        assert is_prime(6) == (False, "6不是质数（能被2整除）")
-        assert is_prime(8) == (False, "8不是质数（能被2整除）")
-        assert is_prime(9) == (False, "9不是质数（能被3整除）")
-        assert is_prime(10) == (False, "10不是质数（能被2整除）")
-        assert is_prime(15) == (False, "15不是质数（能被3整除）")
+        result = prime_checker.check(4)
+        assert result.is_prime is False
+        assert "4不是质数" in result.message
+        
+        result = prime_checker.check(6)
+        assert result.is_prime is False
+        assert "6不是质数" in result.message
+        
+        result = prime_checker.check(8)
+        assert result.is_prime is False
+        assert "8不是质数" in result.message
+        
+        result = prime_checker.check(9)
+        assert result.is_prime is False
+        assert "9不是质数" in result.message
+        
+        result = prime_checker.check(10)
+        assert result.is_prime is False
+        assert "10不是质数" in result.message
+        
+        result = prime_checker.check(15)
+        assert result.is_prime is False
+        assert "15不是质数" in result.message
     
-    def test_is_prime_edge_cases(self):
+    def test_check_edge_cases(self, prime_checker):
         """测试边界情况"""
-        assert is_prime(0) == (False, "质数必须大于等于2")
-        assert is_prime(1) == (False, "质数必须大于等于2")
-        assert is_prime(-1) == (False, "质数必须大于等于2")
+        result = prime_checker.check(0)
+        assert result.is_prime is False
+        assert "质数必须大于等于2" in result.message
+        
+        result = prime_checker.check(1)
+        assert result.is_prime is False
+        assert "质数必须大于等于2" in result.message
+        
+        result = prime_checker.check(-1)
+        assert result.is_prime is None
+        assert "请输入非负整数" in result.message
     
-    def test_is_prime_larger_numbers(self):
+    def test_check_larger_numbers(self, prime_checker):
         """测试较大的数字"""
-        assert is_prime(97) == (True, "97是质数")
-        assert is_prime(101) == (True, "101是质数")
-        assert is_prime(100) == (False, "100不是质数（能被2整除）")
-        assert is_prime(1001) == (False, "1001不是质数（能被7整除）")
+        result = prime_checker.check(97)
+        assert result.is_prime is True
+        assert "97是质数" in result.message
+        
+        result = prime_checker.check(101)
+        assert result.is_prime is True
+        assert "101是质数" in result.message
+        
+        result = prime_checker.check(100)
+        assert result.is_prime is False
+        assert "100不是质数" in result.message
+        
+        result = prime_checker.check(1001)
+        assert result.is_prime is False
+        assert "1001不是质数" in result.message
+    
+    def test_validate_input(self, prime_checker):
+        """测试输入验证"""
+        is_valid, msg = prime_checker.validate_input(-1)
+        assert is_valid is False
+        assert "非负整数" in msg
+        
+        is_valid, msg = prime_checker.validate_input(1000000001)
+        assert is_valid is False
+        assert "过大" in msg or "超过" in msg
+        
+        is_valid, msg = prime_checker.validate_input(100)
+        assert is_valid is True
+        assert msg is None
 
 
 class TestIndexRoute:
@@ -149,13 +232,22 @@ class TestCheckPrimeRoute:
         assert '质数必须大于等于2' in data['message']
     
     def test_check_prime_large_number(self, client):
-        """测试大数字（可能超时）"""
+        """测试大数字（超过限制）"""
         response = client.post('/check',
                               json={'number': '999999999999999999'},
                               content_type='application/json')
-        # 大数字可能会超时，但应该返回 200 而不是 500
+        # 大数字超过限制，应该返回 400
+        assert response.status_code == 400
+        data = response.get_json()
+        assert data['success'] is False
+        assert '过大' in data['message'] or '超过' in data['message']
+    
+    def test_check_prime_within_limit(self, client):
+        """测试在限制内的较大数字"""
+        response = client.post('/check',
+                              json={'number': '999999999'},  # 9.99亿，在默认限制内
+                              content_type='application/json')
+        # 应该在限制内，可能超时或成功
         assert response.status_code == 200
         data = response.get_json()
-        # 可能是超时或成功，但不应该是服务器错误
         assert 'success' in data
-

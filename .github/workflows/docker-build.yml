@@ -5,12 +5,14 @@ on:
     branches:
       - main
       - master
+      - dev
     tags:
       - 'v*'
   pull_request:
     branches:
       - main
       - master
+      - dev
   workflow_dispatch:
 
 env:
@@ -60,6 +62,14 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: 从 pyproject.toml 提取版本号
+        id: version
+        run: |
+          # 使用 Python 解析 pyproject.toml 提取版本号
+          VERSION=$(python3 -c "import tomllib; f = open('pyproject.toml', 'rb'); data = tomllib.load(f); print(data['project']['version'])")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "提取的版本号: $VERSION"
+
       - name: 提取元数据（标签、摘要等）
         id: meta
         uses: docker/metadata-action@v5
@@ -72,6 +82,8 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=nightly,enable=${{ github.ref == 'refs/heads/dev' }}
+            type=raw,value=${{ steps.version.outputs.version }},enable=${{ github.ref == 'refs/heads/dev' }}
 
       - name: 构建并推送 Docker 镜像
         uses: docker/build-push-action@v5
