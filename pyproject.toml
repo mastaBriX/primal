@@ -1,6 +1,6 @@
 [project]
 name = "primal"
-version = "0.2.0+nightly"
+version = "0.3.0+nightly"
 description = "质数检查 Flask 应用"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -8,7 +8,6 @@ dependencies = [
     "Flask==3.0.0",
     "Werkzeug==3.0.1",
     "gunicorn==21.2.0",
-    "Flask-Talisman==1.1.0",
 ]
 
 [project.optional-dependencies]

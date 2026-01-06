@@ -1,10 +1,7 @@
 """
 测试 Flask 应用的质数检查功能
 """
-import os
 import pytest
-# 在导入 app 之前设置环境变量，确保 Talisman 在测试模式下不强制 HTTPS
-os.environ['FLASK_ENV'] = 'testing'
 from src.app import app
 from src.services.prime_checker import PrimeChecker
 

@@ -3,7 +3,6 @@ Flask 应用主文件
 路由层直接调用服务层
 """
 from flask import Flask, render_template, request, jsonify
-from flask_talisman import Talisman
 import logging
 import os
 from src.config import Config
@@ -11,47 +10,10 @@ from src.services.prime_checker import PrimeChecker
 
 
 # 创建 Flask 应用
-# 模板目录在 src/templates/ 下
+# 模板目录在 src/templates/ 下，静态文件目录在 src/static/ 下
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-app = Flask(__name__, template_folder=template_dir)
-
-# 配置安全响应头
-# 在生产环境启用严格的安全策略，开发环境和测试环境可以放宽
-# 检查是否在测试环境中（通过环境变量）
-is_testing = os.environ.get('FLASK_ENV') == 'testing' or os.environ.get('PYTEST_CURRENT_TEST') is not None
-
-if Config.DEBUG or is_testing:
-    # 开发/测试环境：允许内联脚本和样式（用于调试和测试），不强制 HTTPS
-    Talisman(
-        app,
-        force_https=False,
-        strict_transport_security=False,
-        content_security_policy={
-            'default-src': "'self'",
-            'script-src': "'self' 'unsafe-inline'",
-            'style-src': "'self' 'unsafe-inline'",
-        }
-    )
-else:
-    # 生产环境：严格的安全策略
-    Talisman(
-        app,
-        force_https=True,
-        strict_transport_security=True,
-        strict_transport_security_max_age=31536000,  # 1年
-        content_security_policy={
-            'default-src': "'self'",
-            'script-src': "'self'",
-            'style-src': "'self'",
-            'img-src': "'self' data:",
-            'font-src': "'self'",
-        },
-        referrer_policy='strict-origin-when-cross-origin',
-        feature_policy={
-            'geolocation': "'none'",
-            'notifications': "'none'",
-        }
-    )
+static_dir = os.path.join(os.path.dirname(__file__), 'static')
+app = Flask(__name__, template_folder=template_dir, static_folder=static_dir, static_url_path='/static')
 
 # 配置应用
 app.config.update(Config.get_config_dict())
