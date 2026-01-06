@@ -139,6 +139,19 @@ class TestIndexRoute:
         assert response.status_code == 200
 
 
+class TestVersionRoute:
+    """测试版本号 API 路由"""
+    
+    def test_version_route(self, client):
+        """测试版本号 API 返回 200 和版本信息"""
+        response = client.get('/api/version')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert 'version' in data
+        assert isinstance(data['version'], str)
+        assert len(data['version']) > 0
+
+
 class TestCheckPrimeRoute:
     """测试质数检查 API 路由"""
     

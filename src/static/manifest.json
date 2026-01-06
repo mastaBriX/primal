@@ -3,10 +3,12 @@
   "short_name": "质数判断",
   "description": "快速判断数字是否为质数",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",
   "orientation": "portrait-primary",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/static/icons/icon-72x72.png",
@@ -42,13 +44,13 @@
       "src": "/static/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/static/icons/icon-384x384.png",
       "sizes": "384x384",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/static/icons/icon-512x512.png",

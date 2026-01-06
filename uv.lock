@@ -276,7 +276,7 @@ wheels = [
 
 [[package]]
 name = "primal"
-version = "0.2.0+nightly"
+version = "0.3.0+nightly"
 source = { editable = "." }
 dependencies = [
     { name = "flask" },

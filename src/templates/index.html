@@ -2,12 +2,19 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#667eea">
     <meta name="description" content="快速判断数字是否为质数">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="质数判断">
     <title>质数判断工具</title>
     <link rel="manifest" href="/static/manifest.json">
     <link rel="icon" type="image/svg+xml" href="/static/icons/icon.svg">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/static/icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/icons/icon-192x192.png">
     <style>
         * {
             margin: 0;
@@ -177,6 +184,15 @@
             margin-top: 10px;
             color: #666;
         }
+        
+        .version {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #999;
+            font-size: 0.85em;
+        }
     </style>
 </head>
 <body>
@@ -208,6 +224,10 @@
         
         <div class="result" id="result">
             <div class="result-message" id="resultMessage"></div>
+        </div>
+        
+        <div class="version" id="version">
+            <span>版本: <span id="versionNumber">加载中...</span></span>
         </div>
     </div>
     
@@ -272,6 +292,25 @@
                 form.dispatchEvent(new Event('submit'));
             }
         });
+        
+        // 获取版本号
+        async function loadVersion() {
+            try {
+                const response = await fetch('/api/version');
+                const data = await response.json();
+                if (data.version) {
+                    document.getElementById('versionNumber').textContent = data.version;
+                } else {
+                    document.getElementById('versionNumber').textContent = '未知';
+                }
+            } catch (error) {
+                console.error('获取版本号失败:', error);
+                document.getElementById('versionNumber').textContent = '未知';
+            }
+        }
+        
+        // 页面加载时获取版本号
+        loadVersion();
         
         // 注册 Service Worker
         if ('serviceWorker' in navigator) {

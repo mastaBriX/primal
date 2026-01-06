@@ -5,6 +5,7 @@ Flask 应用主文件
 from flask import Flask, render_template, request, jsonify
 import logging
 import os
+from pathlib import Path
 from src.config import Config
 from src.services.prime_checker import PrimeChecker
 
@@ -32,10 +33,40 @@ Config.validate()
 prime_checker = PrimeChecker()
 
 
+def get_version():
+    """从 pyproject.toml 读取版本号"""
+    try:
+        # 获取项目根目录（src/app.py -> src -> 项目根目录）
+        current_file = Path(__file__)
+        project_root = current_file.parent.parent
+        pyproject_path = project_root / 'pyproject.toml'
+        
+        if pyproject_path.exists():
+            # 读取 pyproject.toml
+            with open(pyproject_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    if line.strip().startswith('version ='):
+                        # 提取版本号，去除引号
+                        version = line.split('=')[1].strip().strip('"').strip("'")
+                        return version
+    except Exception as e:
+        logger.warning(f'无法读取版本号: {str(e)}')
+    
+    return 'unknown'
+
+
 @app.route('/')
 def index():
     """主页面"""
     return render_template('index.html')
+
+
+@app.route('/api/version', methods=['GET'])
+def get_app_version():
+    """获取应用版本号"""
+    return jsonify({
+        'version': get_version()
+    }), 200
 
 
 @app.route('/check', methods=['POST'])
